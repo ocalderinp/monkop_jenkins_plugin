@@ -1,0 +1,34 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <!--
+    This jelly script is used for per-project configuration.
+
+    See global.jelly for a general discussion about jelly script.
+  -->
+
+  <!--
+    Creates a text field that shows the value of the "name" property.
+    When submitted, it will be passed to the corresponding constructor parameter.
+  -->
+
+  <f:entry title="${%Path to monkop-cli.py}" >
+    <f:textbox field="path" />
+  </f:entry>
+
+  <f:entry title="${%Path to apk}" >
+    <f:textbox field="apk" />
+  </f:entry>
+
+  <f:entry title="${%API Key}" >
+    <f:password field="secretKey" />
+  </f:entry>
+
+  <f:entry title="${%Test duration(minutes)}">
+    <f:textbox field="time" />
+  </f:entry>
+
+  <f:entry title="${%Wait for completion}" >
+    <f:checkbox name="wait" checked="true"/>
+  </f:entry>
+
+</j:jelly>
