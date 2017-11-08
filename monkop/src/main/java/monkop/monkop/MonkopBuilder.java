@@ -31,16 +31,18 @@ public class MonkopBuilder extends Builder implements SimpleBuildStep {
     private final String secretKey;
     private final Integer time;
     private final boolean wait;
+    private final String mailcc;
 
     @DataBoundConstructor
     public MonkopBuilder(String path, String apk, String secretKey,
-                         Integer time, boolean wait)
+                         Integer time, boolean wait, String mailcc)
     {
         this.path = path;
         this.apk = apk;
         this.secretKey = secretKey;
         this.time = time;
         this.wait = wait;
+        this.mailcc = mailcc;
     }
 
     public String getPath() {
@@ -63,6 +65,10 @@ public class MonkopBuilder extends Builder implements SimpleBuildStep {
         return wait;
     }
 
+    public String getMailcc() {
+        return mailcc;
+    }
+
     @Override
     public void perform(Run<?,?> build, FilePath workspace, Launcher launcher, TaskListener listener) throws IOException, InterruptedException {
 
@@ -71,7 +77,7 @@ public class MonkopBuilder extends Builder implements SimpleBuildStep {
             String commandLine = "python ";
             String separator = ( Os.isFamily(Os.FAMILY_WINDOWS) ) ? "\\" : "/";
             String tempPath = ( getPath().endsWith(separator) )? getPath() + "monkop-cli.py" : getPath() + separator + "monkop-cli.py";
-            commandLine += tempPath + " -k " + getSecretKey() + " -t " + getTime();
+            commandLine += tempPath + " -k " + getSecretKey() + " -t " + getTime() + " -cc " + getMailcc();
             if(getWait()){
                 commandLine += " -w ";
             }
@@ -79,7 +85,7 @@ public class MonkopBuilder extends Builder implements SimpleBuildStep {
             command.addTokenized(commandLine);
             Launcher.ProcStarter ps = launcher.new ProcStarter();
             ps = ps.cmds(command).stdout(listener);
-            ps = ps.pwd(build.getRootDir()).envs(build.getEnvironment(listener));
+            ps = ps.pwd(workspace).envs(build.getEnvironment(listener));
             Proc proc = launcher.launch(ps);
             int retcode = proc.join();
         }
@@ -102,12 +108,13 @@ public class MonkopBuilder extends Builder implements SimpleBuildStep {
         public FormValidation doCheckForm(@QueryParameter("path") final String _path,
                                           @QueryParameter("apk") final String _apk,
                                           @QueryParameter("secretKey") final String _secretKey,
-                                          @QueryParameter("time") final String _time
+                                          @QueryParameter("time") final String _time,
+                                          @QueryParameter("time") final String _mailcc
                                           )
                 throws IOException, ServletException
         {
             if (_path.length() == 0 || _apk.length() == 0 || _secretKey.length() == 0 ||
-                    _time.length() == 0)
+                    _time.length() == 0 || _mailcc.length() == 0)
                 return FormValidation.error("Please set a value for all fields");
             int tTime = Integer.parseInt(_time);
             if (tTime <= 0)

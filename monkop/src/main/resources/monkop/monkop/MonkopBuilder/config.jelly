@@ -31,4 +31,8 @@
     <f:checkbox name="wait" checked="true"/>
   </f:entry>
 
+  <f:entry title="${%Send mail to}" >
+    <f:textbox field="mailcc" />
+  </f:entry>
+
 </j:jelly>
